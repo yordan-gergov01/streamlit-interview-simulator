@@ -1,16 +1,49 @@
 from openai import OpenAI
 import streamlit as st
 
-st.set_page_config(page_title="Streamlit Chat", chat_icon="💬")
+st.set_page_config(page_title="Streamlit Chat", page_icon="💬")
 st.title("Chatbot")
+
+st.subheader("Personal information", divider="rainbow")
+
+name = st.text_input(label="Name", max_chars=None, placeholder="Enter your name")
+experience = st.text_area(label="Experience", value="", height=None, max_chars=None, placeholder="Describe your experience")
+skills = st.text_area(label="Skills", value="", height=None, max_chars=None, placeholder="List your skills")
+
+st.write(f"**Your Name**: {name}")
+st.write(f"**Your Experience**: {experience}")
+st.write(f"**Your Skills**: {skills}")
+
+st.subheader("Company and Position", divider="rainbow")
+
+col1, col2 = st.columns(2)
+with col1:
+    level = st.radio(
+        "Choose level",
+        key="visibility",
+        options=["Junior", "Mid-level", "Senior"]
+    )
+
+with col2:
+    position = st.selectbox(
+        "Choose a position",
+        ("Data Scientist", "Data Engineer", "ML Engineer", "BI Analyst", "Financial Analyst")
+    )
+
+company = st.selectbox(
+    "Choose a Company",
+    ("Amazon", "Meta", "Udemy", "Anthropic", "OpenAI", "SpaceX", "LinkedIn")
+)
+
+st.write(f"**Your information**: {level} {position} at {company}")
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-if "openai_mode" not in st.session_state:
+if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [{"role": "system", "content": f"You are an HR executive that interviews an interviewee called {name} with experience {experience} and skills {skills}. You should interview them for the position {level} {position} at the company {company}."}]
 
 for message in st.session_state.messages:
     if message["role"] != "system":
