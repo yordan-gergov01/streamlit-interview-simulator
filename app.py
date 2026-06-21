@@ -8,6 +8,14 @@ st.title("Chatbot")
 # Initialize session state variable to track setup completion
 if "setup_complete" not in st.session_state:
     st.session_state.setup_complete = False
+if "user_message_count" not in st.session_state:
+    st.session_state.user_message_count = 0
+if "feedback_shown" not in st.session_state:
+    st.session_state.feedback_shown = False
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "chat_complete" not in st.session_state:
+    st.session_state.chat_complete = False
 
 # Helper function to update session state
 def complete_setup():
@@ -26,11 +34,11 @@ if not st.session_state.setup_complete:
         st.session_state["skills"] = ""
 
     # Test labels for personal information
-    st.session_state["name"] = st.text_input(label = "Name", max_chars = None, value = st.session_state["name"], placeholder = "Enter your name")
+    st.session_state["name"] = st.text_input(label = "Name", max_chars = 40, value = st.session_state["name"], placeholder = "Enter your name")
 
-    st.session_state["experience"] = st.text_area(label = "Expirience", value = st.session_state["experience"], height = None, max_chars = None, placeholder = "Describe your experience")
+    st.session_state["experience"] = st.text_area(label = "Expirience", value = st.session_state["experience"], height = None, max_chars = 200, placeholder = "Describe your experience")
 
-    st.session_state["skills"] = st.text_area(label = "Skills", value = st.session_state["skills"], height = None, max_chars = None, placeholder = "List your skills")
+    st.session_state["skills"] = st.text_area(label = "Skills", value = st.session_state["skills"], height = None, max_chars = 200, placeholder = "List your skills")
 
     st.write(f"**Your Name**: {st.session_state['name']}")
     st.write(f"**Your Experience**: {st.session_state['experience']}")
@@ -103,7 +111,7 @@ if st.session_state.setup_complete:
                 st.markdown(message["content"])
 
     # Input field for the user to send a new message
-    if prompt := st.chat_input("Your answer."):
+    if prompt := st.chat_input("Your answer.", max_chars = 1000):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
